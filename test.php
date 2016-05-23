@@ -1,6 +1,7 @@
 <?php
 	require_once("cnvt.php");
 	require_once("class.planets.php");
+	require_once("class.houses.php");
 
 	$mm = 7;
 	$dd=18;
@@ -20,3 +21,24 @@
 		echo $planet->longName;
 		echo DecToZod($planet->long);
 	}
+	
+	$lat = 40.033;
+	$lng = 76.3;
+	
+	$h = new houses($mm, $dd, $yyyy, $gmt, $lat, $lng);
+	
+	$h->PlacHouses();
+	echo "Placidius Houses<br>";
+	printHouses($h->house);
+	
+	$h->KochHouses();
+	echo "<br>Koch Houses<br>";
+	printHouses($h->house);
+	
+function printHouses($h)
+{
+	for ($i=0;$i<12;$i++)
+	{
+		echo $i+1 . ' - '. DecToZod($h[$i]) . '<br>';
+	}
+}
