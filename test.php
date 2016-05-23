@@ -16,11 +16,13 @@
 	
 	for ($i=0;$i<10;$i++)
 	{
-		echo '<br>';
 		$planet = $p->planets[$i];
 		echo $planet->longName;
 		echo DecToZod($planet->long);
+		echo '<br>';
 	}
+	
+	echo "<br>";
 	
 	$lat = 40.033;
 	$lng = 76.3;
@@ -37,7 +39,11 @@
 	
 	$h->EqualHouses();
 	echo "<br>Equal House System<br>";
-	printHouses($h>house);
+	printHouses($h->house);
+	
+	$h->TopocentricHouses();
+	echo "<br>Topocentric House System<br>";
+	printHouses($h->house);	
 	
 function printHouses($h)
 {
