@@ -28,12 +28,16 @@
 	$h = new houses($mm, $dd, $yyyy, $gmt, $lat, $lng);
 	
 	$h->PlacHouses();
-	echo "Placidius Houses<br>";
+	echo "Placidius House System<br>";
 	printHouses($h->house);
 	
 	$h->KochHouses();
-	echo "<br>Koch Houses<br>";
+	echo "<br>Koch House System<br>";
 	printHouses($h->house);
+	
+	$h->EqualHouses();
+	echo "<br>Equal House System<br>";
+	printHouses($h>house);
 	
 function printHouses($h)
 {
