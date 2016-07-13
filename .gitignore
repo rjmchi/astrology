@@ -1,0 +1,7 @@
+*.log
+*.idx
+*.dat
+
+/.htaccess
+/license.txt
+/readme.html
