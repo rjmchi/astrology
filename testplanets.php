@@ -1,5 +1,4 @@
 <?php
-	require_once("cnvt.php");
 	require_once("class.planets.php");
 
 	$mm = 7;
@@ -20,3 +19,5 @@
 		echo $planet->longName;
 		echo DecToZod($planet->long);
 	}
+	
+	var_dump($p->planets);

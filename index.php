@@ -1,15 +1,11 @@
 <?php
-require_once("cnvt.php");
 require_once("class.planets.php");
 require_once("class.houses.php");
 	$msg = '';
-	$dateerror = '';
-	$timeerror = '';
-	$laterror = '';
-	$lngerror = '';
-	$timezoneerror = '';
+	$errors = array ('date'=>'', 'time'=>'', 'lat'=>'', 'lng'=>'', 'timezone'=>'');
 	$error = false;
 	$display = false;
+
 	$name = getVar('name');
 	$mm = getVar('mm');
 	$dd = getVar('dd');
@@ -27,68 +23,70 @@ require_once("class.houses.php");
 	$lngmin = getVar('lngmin');
 	$lngew = getVar('lngew', '1');
 	$timezone = getVar('timezone');
-	$housesystem = getVar('housesystem', '0');
-	
+	$housesystem = getVar('housesystem', '0');	
+			
 	$tz = new DateTimeZone('UTC');
 	$now = new DateTime('now', $tz);
 	
 //	date_add($now, date_interval_create_from_date_string($now->getOffset().'s'));
 //	date_add($now, date_interval_create_from_date_string("5h"));
+
 	$gmt = $now->format('H') + ($now->format('i')/60);
 	$transit = new planets($now->format('m'),$now->format('d'),$now->format('Y'),$gmt);	
 	
 	if (isset($_POST['submit']))
 	{
+	
 		if (!is_numeric($mm) || !is_numeric($dd) || !is_numeric($yyyy))
 		{
-			$dateerror = 'Please enter Date';
+			$errors['date'] = 'Please enter Date';
 		}
 		else if (!checkdate($_POST['mm'], $_POST['dd'], $_POST['yyyy']))
 		{
-			$dateerror = 'Bad date';
+			$errors['date'] = 'Bad date';
 			$error=true;
 		}
 		if (!is_numeric($_POST['hours']))
 		{
-			$timeerror = 'Please enter time';
+			$errors['time'] = 'Please enter time';
 			$error=true;
 		}
 		else if ($_POST['hours'] > 12 || $_POST['minutes'] > 59)
 		{
-			$timeerror = 'Bad Time';
+			$errors['time'] = 'Bad Time';
 			$error=true;
 		}
 		if (!is_numeric($_POST['latdeg']) || !is_numeric($_POST['latmin']) || !is_numeric($_POST['latns']))
 		{
-			$laterror = 'Please enter Latitude';
+			$errors['lat'] = 'Please enter Latitude';
 			$error=true;
 		}
 		else if ($_POST['latdeg'] > 90 || $_POST['latmin'] > 59)
 		{
-			$laterror = 'Bad Latitude';
+			$errors['lat'] = 'Bad Latitude';
 			$error=true;
 		}
 		if (!is_numeric($_POST['lngdeg']) || !is_numeric($_POST['lngmin']) || !is_numeric($_POST['lngew']))
 		{
-			$lngerror = 'Please enter Longitude';
+			$errors['lng'] = 'Please enter Longitude';
 			$error=true;
 		}
 		else if ($_POST['lngdeg'] > 180 || $_POST['lngmin'] > 59)
 		{
-			$lngerror = 'Bad Longitude';
+			$errors['lng'] = 'Bad Longitude';
 			$error=true;
 		}
 		if (is_numeric($_POST['timezone']))
 		{
 			if (($_POST['timezone'] > 12) || ($_POST['timezone'] < -12))
 			{
-				$timezoneerror = 'Invalid Time Zone';
+				$errors['timezone'] = 'Invalid Time Zone';
 				$error = true;
 			}
 		}
 		else
 		{
-			$timezoneerror = 'Time Zone must be numeric';
+			$errors['timezone'] = 'Time Zone must be numeric';
 			$error = true;
 		}
 		if (!$error)
@@ -129,7 +127,7 @@ require_once("class.houses.php");
 </head>
 
 <body>
-<p><?php echo $now->format('m/d/Y  H:i:s');?></p>
+<p><?php echo $now->format('m/d/Y  h:i:s A');?></p>
 <p><?php echo $transit->planets[9]->longName;?> 
 <?php echo DecToZod($transit->planets[9]->long);?></p>
 <?php 
@@ -159,7 +157,7 @@ require_once("class.houses.php");
 		<input name="dd" type="text" id="dd" size="2" maxlength="2" value="<?php echo $dd;?>">
 		<label for="yyyy">Year:</label>
 		<input name="yyyy" type="text" id="yyyy" size="4" maxlength="4" value="<?php echo $yyyy;?>">
-		<span class="error"><?php echo $dateerror;?></span>
+		<span class="error"><?php echo $errors['date'];?></span>
 	</fieldset>
 	<fieldset>
 		Birth Time:
@@ -173,7 +171,7 @@ require_once("class.houses.php");
 		<label>
 			<input type="radio" name="ampm" value="pm" id="ampm_1" <?php echo ($ampm == 'pm') ? ' checked ' : '';?>>
 			PM</label>
-		<span class="error"><?php echo $timeerror;?></span>
+		<span class="error"><?php echo $errors['time'];?></span>
 	</fieldset>
 	<fieldset>
 		Birth Place:
@@ -196,7 +194,7 @@ require_once("class.houses.php");
 			S</label>
 		<label for="latmin">Min:</label>
 		<input name="latmin" type="text" id="latmin" size="2" maxlength="2" value="<?php echo $latmin;?>">
-		<span class="error"><?php echo $laterror;?></span>
+		<span class="error"><?php echo $errors['lat'];?></span>
 	</fieldset>
 	<fieldset>
 		Longitude:
@@ -210,12 +208,12 @@ require_once("class.houses.php");
 		W</label>
 		<label for="lngmin">Min:</label>
 		<input name="lngmin" type="text" id="lngmin" size="2" maxlength="2" value="<?php echo $lngmin;?>">
-		<span class="error"><?php echo $lngerror;?></span>
+		<span class="error"><?php echo $errors['lng'];?></span>
 	</fieldset>
 	<fieldset>
 		<label for="timezone">Time Zone:</label>
 		<input name="timezone" type="text" size="5" value="<?php echo $timezone;?>">
-		<span class="error"><?php echo $timezoneerror;?></span>
+		<span class="error"><?php echo $errors['timezone'];?></span>
 	</fieldset>
 	<fieldset>House System
 	<select name="housesystem" id="housesystem">
@@ -286,13 +284,6 @@ if ($display)
 <?php
 function getVar($var, $default='')
 {
-	if (isset($_POST[$var]))
-	{
-		return $_POST[$var];
-	}
-	else
-	{
-		return $default;
-	}
+	return (isset($_POST[$var])?$_POST[$var]:$default);
 }
 ?>

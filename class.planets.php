@@ -304,7 +304,11 @@ class Planets {
 			}
 						
 			$br = .0057756 * sqrt($xx * $xx + $yy * $yy + $zz * $zz) * rad2deg($xk);
+
+			echo ( $this->planets[$i]->longName) . '<br>';
 			
+			echo $xk . '<br>';
+						
 			if ($xk < 0)
 			{
 				$this->planets[$i]->rx = 'Rx';

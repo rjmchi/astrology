@@ -1,5 +1,4 @@
 <?php
-	require_once("cnvt.php");
 	require_once("class.planets.php");
 	require_once("class.houses.php");
 
