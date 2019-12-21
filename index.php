@@ -244,7 +244,7 @@ if ($display)
 ?>
 		<tr class="<?php echo ($odd)? 'odd': 'even';?>">
 			<td><?php echo $planet->longName;?></td>
-			<td><?php echo DecToZod($planet->long);?></td>
+			<td><?php echo DecToZod($planet->long) . $planet->rx;?></td>
 			<td><?php echo DecToLat($planet->lat);?></td>
 			<td><?php echo DecToLat($planet->dcl);?></td>
 		</tr>
