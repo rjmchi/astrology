@@ -101,11 +101,12 @@ class Planets {
 	function __construct($m, $d, $y, $gmt)
 	{
 		$jd = new JulDate($m, $d, $y, $gmt);
+
 		$ci = $jd->ci;
 		$coord = new Coordinates();
 				
 		$ob = deg2rad(23.452294 - .0130125 * $ci);
-				
+
 		$ci2 = $ci*$ci;
 		$no_terms[0] = 11;
 		$no_terms[1] = 5;
@@ -126,8 +127,8 @@ class Planets {
 			$this->planets[$i] = new Planet($i);	
 					
 			$ea = $m = deg2rad(Mod360($this->ma[$i][0] + $this->ma[$i][1] * $ci + $this->ma[$i][2] * $ci2));
-			
-			$e = $this->ecc[$i][0] + $this->ecc[$i][1] * $ci + $this->ecc[$i][2] * $ci2;
+
+			$e = $this->ecc[$i][0] + $this->ecc[$i][1] * $ci + $this->ecc[$i][2] * $ci2;		
 
 			for ($j=1; $j<7; $j++)
 	    		$ea = $m + $e * sin($ea);
@@ -141,22 +142,25 @@ class Planets {
 
 			$x = $xw;
 			$y = $yw;
-		
+
 			$coord->RecToPol($x, $y);
 			$a = $coord->a;
 			$r = $coord->r;
 			$a += $ap;
+
+
 		
 			$coord->PolToRec($a, $r);
 			$x = $coord->x;
 			$y = $coord->y;
+
 			$d = $x;
 			$x = $y;
 			$y = 0;
 			$coord->RecToPol($x, $y);
 			$a = $coord->a;
 			$r = $coord->r;
-		
+	
 			$a += $in;
 			$coord->PolToRec($a, $r);
 			$x = $coord->x;
@@ -228,7 +232,7 @@ class Planets {
 
 			$xx = $x;
 			$yy = $y;
-			$zz = $g;			
+			$zz = $g;		
 			
 /*  												*/
 /*		get harmonics								*/
@@ -304,10 +308,6 @@ class Planets {
 			}
 						
 			$br = .0057756 * sqrt($xx * $xx + $yy * $yy + $zz * $zz) * rad2deg($xk);
-
-			echo ( $this->planets[$i]->longName) . '<br>';
-			
-			echo $xk . '<br>';
 						
 			if ($xk < 0)
 			{
@@ -422,7 +422,7 @@ class Planets {
 
 	//south node
 		$this->planets[11]->long = Mod360($this->planets[10]->long+180);
-		$this->planets[11]->rx = Mod360($this->planets[10]->rx);
+		$this->planets[11]->rx = $this->planets[10]->rx;
 		$this->planets[11]->lat = 0.0;
 	
 		$this->planets[12]->long = abs($this->planets[12]->long);
@@ -479,4 +479,12 @@ class Planets {
 		}
 		return $voc;
 	}
+}
+
+function printval($name, $val)
+{
+	echo '<br>';
+	echo $name . ': ';
+	var_dump($val);
+	echo '<br>';
 }
