@@ -1,6 +1,7 @@
 <?php
 	require_once("class.planets.php");
 	require_once("class.houses.php");
+	require_once("class.convert.php");
 
 	$mm = 7;
 	$dd=18;
@@ -17,7 +18,7 @@
 	{
 		$planet = $p->planets[$i];
 		echo $planet->longName;
-		echo DecToZod($planet->long);
+		echo Convert::DecToZod($planet->long);
 		echo '<br>';
 	}
 	
@@ -48,6 +49,6 @@ function printHouses($h)
 {
 	for ($i=0;$i<12;$i++)
 	{
-		echo $i+1 . ' - '. DecToZod($h[$i]) . '<br>';
+		echo $i+1 . ' - '. Convert::DecToZod($h[$i]) . '<br>';
 	}
 }

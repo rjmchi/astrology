@@ -1,4 +1,5 @@
 <?php
+	require_once("class.convert.php");
 	require_once("class.planets.php");
 
 	$mm = 7;
@@ -17,6 +18,6 @@
 	{
 		echo '<br>';
 		echo $p->longName;
-		echo DecToZod($p->long);
+		echo Convert::DecToZod($p->long);
 	}
 	

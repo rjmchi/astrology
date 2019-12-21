@@ -1,4 +1,5 @@
 <?php
+	require_once("class.convert.php");
 	require_once("class.houses.php");
 
 	$mm = 7;
@@ -26,6 +27,6 @@ function printHouses($h)
 {
 	for ($i=0;$i<12;$i++)
 	{
-		echo $i+1 . ' - '. DecToZod($h[$i]) . '<br>';
+		echo $i+1 . ' - '. Convert::DecToZod($h[$i]) . '<br>';
 	}
 }
