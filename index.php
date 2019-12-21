@@ -129,7 +129,7 @@ require_once("class.houses.php");
 <body>
 <p><?php echo $now->format('m/d/Y  h:i:s A');?></p>
 <p><?php echo $transit->planets[9]->longName;?> 
-<?php echo DecToZod($transit->planets[9]->long);?></p>
+<?php echo Convert::DecToZod($transit->planets[9]->long);?></p>
 <?php 
 	if ($transit->MoonVoidOfCourse())
 	{
@@ -244,9 +244,9 @@ if ($display)
 ?>
 		<tr class="<?php echo ($odd)? 'odd': 'even';?>">
 			<td><?php echo $planet->longName;?></td>
-			<td><?php echo DecToZod($planet->long) . $planet->rx;?></td>
-			<td><?php echo DecToLat($planet->lat);?></td>
-			<td><?php echo DecToLat($planet->dcl);?></td>
+			<td><?php echo Convert::DecToZod($planet->long) . $planet->rx;?></td>
+			<td><?php echo Convert::DecToLat($planet->lat);?></td>
+			<td><?php echo Convert::DecToLat($planet->dcl);?></td>
 		</tr>
 <?php
 	}	
@@ -258,12 +258,12 @@ if ($display)
 	{
 		echo "<p>House ";
 		echo $i+1;
-		echo ": " . DecToZod($h->house[$i]) . "</p>";
+		echo ": " . Convert::DecToZod($h->house[$i]) . "</p>";
 	}
 	echo "<p>East Point: ";
-	echo DecToZod($h->ep) . "</p>";
+	echo Convert::DecToZod($h->ep) . "</p>";
 	echo "<p>Vertex: ";
-	echo DecToZod($h->vx) . "</p>";
+	echo Convert::DecToZod($h->vx) . "</p>";
 ?>
 <h2>Aspects</h2>
 <?php

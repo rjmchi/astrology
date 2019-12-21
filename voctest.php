@@ -1,5 +1,5 @@
 <?php
-require_once("cnvt.php");
+require_once("class.convert.php");
 require_once("class.planets.php");
 
 $month = 10;
@@ -34,7 +34,7 @@ $gmt = $hour + ($minute/60);
 	
 	for ($i=0;$i<10;$i++)
 	{
-		echo '<p>' . $planets->planets[$i]->longName . ' ' . DecToZod($planets->planets[$i]->long).  ' - ' . $planets->planets[$i]->long .'</p>';
+		echo '<p>' . $planets->planets[$i]->longName . ' ' . Convert::DecToZod($planets->planets[$i]->long).  ' - ' . $planets->planets[$i]->long .'</p>';
 	}
 ?>
 </body>

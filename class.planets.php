@@ -1,7 +1,8 @@
 <?php
-require_once("cnvt.php");
+require_once("class.convert.php");
 require_once ("class.juldate.php");
 require_once("class.planet.php");
+require_once("class.coordinates.php");
 
 class Planets {
 	public $ma = array (
@@ -101,12 +102,11 @@ class Planets {
 	function __construct($m, $d, $y, $gmt)
 	{
 		$jd = new JulDate($m, $d, $y, $gmt);
-
 		$ci = $jd->ci;
 		$coord = new Coordinates();
 				
 		$ob = deg2rad(23.452294 - .0130125 * $ci);
-
+				
 		$ci2 = $ci*$ci;
 		$no_terms[0] = 11;
 		$no_terms[1] = 5;
@@ -121,14 +121,13 @@ class Planets {
 		$harm_tab[3] = $this->nh;
 		$harm_tab[4] = $this->ph;
 		
-
 		for ($i=0; $i<9; $i++)
 		{
 			$this->planets[$i] = new Planet($i);	
 					
-			$ea = $m = deg2rad(Mod360($this->ma[$i][0] + $this->ma[$i][1] * $ci + $this->ma[$i][2] * $ci2));
-
-			$e = $this->ecc[$i][0] + $this->ecc[$i][1] * $ci + $this->ecc[$i][2] * $ci2;		
+			$ea = $m = deg2rad(Convert::Mod360($this->ma[$i][0] + $this->ma[$i][1] * $ci + $this->ma[$i][2] * $ci2));
+			
+			$e = $this->ecc[$i][0] + $this->ecc[$i][1] * $ci + $this->ecc[$i][2] * $ci2;
 
 			for ($j=1; $j<7; $j++)
 	    		$ea = $m + $e * sin($ea);
@@ -142,13 +141,11 @@ class Planets {
 
 			$x = $xw;
 			$y = $yw;
-
+		
 			$coord->RecToPol($x, $y);
 			$a = $coord->a;
 			$r = $coord->r;
-			$a += $ap;
-
-
+			$a += $ap;	
 		
 			$coord->PolToRec($a, $r);
 			$x = $coord->x;
@@ -160,7 +157,7 @@ class Planets {
 			$coord->RecToPol($x, $y);
 			$a = $coord->a;
 			$r = $coord->r;
-	
+		
 			$a += $in;
 			$coord->PolToRec($a, $r);
 			$x = $coord->x;
@@ -233,7 +230,7 @@ class Planets {
 			$xx = $x;
 			$yy = $y;
 			$zz = $g;		
-			
+						
 /*  												*/
 /*		get harmonics								*/
 /*													*/
@@ -283,7 +280,7 @@ class Planets {
 			$a = $coord->a;
 			$r = $coord->r;
 			$c = rad2deg($a);
-			$c = Mod360($c);
+			$c = Convert::Mod360($c);
 			$y = $zz;
 			$x = $r;
 			$coord->RecToPol($x, $y);
@@ -325,9 +322,9 @@ class Planets {
 			$r = $coord->r;
 			$c = rad2deg($a) - $br;
 			if (!$i)
-				$c = Mod360($c+180);
+				$c = Convert::Mod360($c+180);
 			else
-				$c = Mod360($c);
+				$c = Convert::Mod360($c);
 			$y = $zz;
 			$x = $r;
 			$coord->RecToPol($x, $y);
@@ -342,18 +339,16 @@ class Planets {
 			
 			$this->Declin($i, $ob);			
 		}
-
 		$this->CalcMoon($jd, $gmt);
 	}
 
-	function CalcMoon( $jd, $gmt)
+	public function CalcMoon( $jd, $gmt)
 	{	
 // note:
 // moon = $this->planets[9]
 // north node = $this->planet[10]
 // south node = $this->planet[11]
 // mean_node = $this->planets[12]
-
 
 		for ($i=9;$i<13;$i++)
 		{
@@ -368,6 +363,7 @@ class Planets {
 		$ll = 973563.0 + 1732564379.0 * $ci - 4.0 * $ci2;
 		$g = 1012395.0 + 6189.0 * $ci;
 		$n = 933060.0 - 6962911.0 * $ci + 7.5 * $ci2;
+
 
 	//Mean Node		
 		$this->planets[12]->long = fmod($n/$m, 360);
@@ -390,7 +386,8 @@ class Planets {
 		$ml = $ml - 110.0 * sin(deg2rad($l + $l1)) - 55.0 * sin(deg2rad(2.0 * $f - $y));
 		$ml = $ml - 45.0 * sin(deg2rad($l + 2.0 * $f)) + 40.0 * sin(deg2rad($l - 2.0 * $f));
 
-		$this->planets[9]->long = Mod360(($ll + $ml) / $m);
+		$this->planets[9]->long = Convert::Mod360(($ll + $ml) / $m);
+
 
 	//Moon's Latitude
 		$mb = 18461.5 * sin(deg2rad($f)) + 1010.0 * sin(deg2rad($l + $f)) - 999.0 * sin(deg2rad($f - $l));
@@ -405,7 +402,7 @@ class Planets {
 		$tn = $n + 5392.0 * sin(deg2rad(2 * $f - $y)) - 541.0 * sin(deg2rad($l1)) - 442.0 * sin(deg2rad($y));
 		$tn = $tn + 423.0 * sin(deg2rad(2.0 * $f)) - 291.0 * sin(deg2rad(2.0 * $l - 2.0 * $f));
 
-		$this->planets[10]->long = Mod360($tn / $m);
+		$this->planets[10]->long = Convert::Mod360($tn / $m);
 	
 		if ($this->planets[10]->long < 0)
 		{
@@ -420,8 +417,9 @@ class Planets {
 		$this->planets[10]->lat = 0.0;
 		$this->planets[10]->dcl = 0.0;
 
-	//south node
-		$this->planets[11]->long = Mod360($this->planets[10]->long+180);
+    //south node
+
+		$this->planets[11]->long = Convert::Mod360($this->planets[10]->long+180);
 		$this->planets[11]->rx = $this->planets[10]->rx;
 		$this->planets[11]->lat = 0.0;
 	
@@ -430,7 +428,7 @@ class Planets {
 		$this->planets[12]->lat = 0.0;
 		$this->planets[12]->dcl = 0.0;
 		$this->planets[12]->rx = ' ';
-	
+    
 		$this->Declin(9, $ob);
 		$this->Declin(10, $ob);
 		$this->Declin(11, $ob);
