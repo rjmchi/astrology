@@ -10,14 +10,13 @@
 	$localtime = ($min/60.0)+$hh;
 	$gmt= $localtime+$tz;
 
-	$p = new planets($mm,$dd,$yyyy,$gmt);	
-	
-	for ($i=0;$i<10;$i++)
+	$planets = new planets($mm,$dd,$yyyy,$gmt);	
+
+
+	foreach($planets->planets as $p)
 	{
 		echo '<br>';
-		$planet = $p->planets[$i];
-		echo $planet->longName;
-		echo DecToZod($planet->long);
+		echo $p->longName;
+		echo DecToZod($p->long);
 	}
 	
-	var_dump($p->planets);
