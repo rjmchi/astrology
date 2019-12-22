@@ -162,7 +162,7 @@ class Convert {
             $s-=12;
         }
     
-        $zod = sprintf("%d %s %02d", $d, $SignNames[$s], $m);
+        $zod = sprintf('%d <span class="glyph">%s</span> %02d', $d, $SignNames[$s], $m);
         return $zod;
     }    
 }
