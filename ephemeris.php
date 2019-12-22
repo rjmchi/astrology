@@ -1,4 +1,5 @@
 <?php
+require_once("class.convert.php");
 require_once("class.planets.php");
 
 	$tz = new DateTimeZone('UTC');
@@ -57,6 +58,7 @@ th {
 </head>
 
 <body>
+
 <h2>Ephemeris for <?php echo $cur_month;?>/<?php echo $cur_year;?></h2>
 <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" id="date">
 <label for="date">Enter Month</label>
@@ -90,14 +92,14 @@ th {
 <?php
 		$planets = new Planets($cur_month, $cur_day, $cur_year, 0);
 ?>
-			<td><span class="glyph"><?php echo DecToZodGlyph($planets->planets[0]->long);?></span></td> <!-- Sun-->
-			<td><span class="glyph"><?php echo DecToZodGlyph($planets->planets[9]->long);?></span></td> <!-- moon-->
+			<td><span class="glyph"><?php echo Convert::DecToZodGlyph($planets->planets[0]->long);?></span></td> <!-- Sun-->
+			<td><span class="glyph"><?php echo Convert::DecToZodGlyph($planets->planets[9]->long);?></span></td> <!-- moon-->
 <?php
 		for ($i=1;$i<9;$i++)
 		{
 			$p = $planets->planets[$i];
 ?>
-			<td><span class="glyph"><?php echo DecToZodGlyph($p->long) . $p->rx;?></span></td>
+			<td><span class="glyph"><?php echo Convert::DecToZodGlyph($p->long) . $p->rx;?></span></td>
 <?php
 		}
 ?>
