@@ -123,6 +123,18 @@ require_once("class.houses.php");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>Natal Chart</title>
+	<style type="text/css">
+@font-face {
+    font-family: "astro";
+    src: url(AstroGadget.ttf) format("truetype");
+}
+p {
+    font-size: 20px;
+}
+span.glyph {
+    font-family: 'astro';
+}
+</style>
 <link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 
@@ -243,8 +255,8 @@ if ($display)
 		$odd = !$odd;
 ?>
 		<tr class="<?php echo ($odd)? 'odd': 'even';?>">
-			<td><?php echo $planet->longName;?></td>
-			<td><?php echo Convert::DecToZod($planet->long) . $planet->rx;?></td>
+			<td><span class="glyph"><?php echo $planet->glyph;?></span></td>
+			<td><?php echo Convert::DecToZodGlyph($planet->long) . $planet->rx;?></td>
 			<td><?php echo Convert::DecToLat($planet->lat);?></td>
 			<td><?php echo Convert::DecToLat($planet->dcl);?></td>
 		</tr>
@@ -258,7 +270,7 @@ if ($display)
 	{
 		echo "<p>House ";
 		echo $i+1;
-		echo ": " . Convert::DecToZod($h->house[$i]) . "</p>";
+		echo ": " . Convert::DecToZodGlyph($h->house[$i]) . "</p>";
 	}
 	echo "<p>East Point: ";
 	echo Convert::DecToZod($h->ep) . "</p>";

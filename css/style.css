@@ -1,4 +1,5 @@
 @charset "utf-8";
+
 .error {
 	color: #F00;
 }
@@ -9,4 +10,8 @@
 .odd 
 {
 	background-color:#cedce0;
+}
+
+table.planets {
+	font-size: 20px;
 }
