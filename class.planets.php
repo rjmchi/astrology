@@ -340,6 +340,12 @@ class Planets {
 			$this->Declin($i, $ob);			
 		}
 		$this->CalcMoon($jd, $gmt);
+	
+	//sort Sun,Moon,Mercury ...
+        $this->planets[9]->id=2;
+        $this->planets = array_merge( array_slice($this->planets,0,1),  [$this->planets[9]], array_slice($this->planets,1) );
+        array_splice($this->planets, 10, 1);
+		
 	}
 
 	public function CalcMoon( $jd, $gmt)
