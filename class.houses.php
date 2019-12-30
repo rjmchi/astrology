@@ -267,17 +267,21 @@ class Houses {
 
 		$p1 = atan(tan($this->lat) / 3.0);
 		$p2 = atan((tan($this->lat) / 3.0) * 2.0);
-		$ra = Convert::Mod2Pi($this->ra + $rad30 );
+
+		$ra = Convert::Mod360($this->ra + $rad30);
+
 		$this->house[10] = $this->TopHouse($p1,$ra);
 		$this->house[4] = Convert::Mod360($this->house[10]+180.0);
+		
+		$ra = Convert::Mod360($ra + $rad30);
 
-		$ra = Convert::Mod2Pi($ra+$rad30 );
 		$this->house[11] = $this->TopHouse($p2, $ra);
 		$this->house[5] = Convert::Mod360($this->house[11]+180.0);
 
-		$ra = Convert::Mod360($ra+$rad30 );
-		$this->house[0] = $this->TopHouse($this->lat, $ra);
-		$this->house[6] = Convert::Mod360($this->house[0]+180.0);
+		$ra = Convert::Mod360($ra + $rad30);
+
+		$this->house[0] = $this->asc;
+		$this->house[6] = Convert::Mod360($this->house[0] + 180);
 
 		$ra = Convert::Mod360($ra+$rad30 );
 		$this->house[1] = $this->TopHouse($p2, $ra);
