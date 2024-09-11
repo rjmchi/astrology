@@ -7,12 +7,12 @@
 	PolToRec  - converts polar coordinates to rectangular
 	DecToZod  - converts decimal to zodiac
 	DecToZodGlyph - comverts decimal to zodiac using charater for glyph
-	Mod360 
+	Mod360
 */
 
 define("SMALL",  1.7453e-09);
 class Convert {
-    
+
 	static public function RecToPol($x, $y)
 	{
 		if (! $y)
@@ -25,20 +25,20 @@ class Convert {
             $a += M_PI;
         return array('a'=>$a, 'r'=>$r);
     }
-    
+
 	static public function PolToRec($a, $r)
 	{
 		$x = $r * cos($a);
-        $y = $r * sin($a);	
+        $y = $r * sin($a);
         return array('x'=>$x,'y'=>$y);
     }
-    
+
     static public function DecToTime ($dec_time, $clock_type)
     {
         $time_hours = (int) $dec_time;
         $dec_time -= $time_hours;
         $dec_time = $dec_time * 60.0 +.5;
-        
+
         $time_min = (int) $dec_time;
         if ($clock_type == 12)
         {
@@ -58,9 +58,9 @@ class Convert {
         }
         else
             $txtTime = sprintf ("%d:%02d", $time_hours, $time_min);
-    
+
         return $txtTime;
-    }    
+    }
 
     static public function DecToLong($dec_lng)
     {
@@ -89,7 +89,7 @@ class Convert {
         $lat_min = (int) $dec_lat;
         $txtLat = sprintf ("%d%s%02d",$lat_deg,$dir,$lat_min);
         return $txtLat;
-    }    
+    }
 
     static public function Mod360($x)
     {
@@ -106,11 +106,11 @@ class Convert {
         }
         return $x;
     }
-    
+
     static public function Mod2Pi($x)
     /*  returns result within circle in radians    */
     {
-        return ( $x - ((int)($x / M_PI*2)) * M_PI*2);
+        return ( $x - ((int)($x /( M_PI*2))) * M_PI*2);
     }
     static public function DecToZod($plce)
     {
@@ -119,7 +119,7 @@ class Convert {
         $plce -= ($s * 30);
         $d = (int) $plce;
         $m = (int) ((($plce - $d) * 60.0) + .5);
-    
+
         if ($m >=60)
         {
             $m -=60;
@@ -134,11 +134,11 @@ class Convert {
         {
             $s-=12;
         }
-    
+
         $zod = sprintf("%d %s %02d", $d, $SignNames[$s], $m);
         return $zod;
     }
-    
+
     static public function DecToZodGlyph($plce)
     {
     $SignNames= array(' a ', ' b ', ' c ', ' d ', ' e ', ' f ', ' g ', ' h ', ' i ', ' j ', ' k ', ' l ');
@@ -146,7 +146,7 @@ class Convert {
         $plce -= ($s * 30);
         $d = (int) $plce;
         $m = (int) ((($plce - $d) * 60.0) + .5);
-    
+
         if ($m >=60)
         {
             $m -=60;
@@ -161,8 +161,8 @@ class Convert {
         {
             $s-=12;
         }
-    
+
         $zod = sprintf('%d <span class="glyph">%s</span> %02d', $d, $SignNames[$s], $m);
         return $zod;
-    }    
+    }
 }
