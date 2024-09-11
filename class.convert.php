@@ -99,12 +99,7 @@ class Convert {
         die ($x);
         echo '--';
     }
-        $x = ( $x - ((int)($x / 360)) * 360.0);
-        if ($x < 0)
-        {
-            $x = 360.0 + $x;
-        }
-        return $x;
+        return fmod($x, 360);
     }
 
     static public function Mod2Pi($x)
