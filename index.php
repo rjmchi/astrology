@@ -23,20 +23,22 @@ require_once("class.houses.php");
 	$lngmin = getVar('lngmin');
 	$lngew = getVar('lngew', '1');
 	$timezone = getVar('timezone');
-	$housesystem = getVar('housesystem', '0');	
-			
+	$housesystem = getVar('housesystem', '0');
+	$orbmajor = 10;
+	$orbminor = 2;
+
 	$tz = new DateTimeZone('UTC');
 	$now = new DateTime('now', $tz);
-	
+
 //	date_add($now, date_interval_create_from_date_string($now->getOffset().'s'));
 //	date_add($now, date_interval_create_from_date_string("5h"));
 
 	$gmt = $now->format('H') + ($now->format('i')/60);
-	$transit = new planets($now->format('m'),$now->format('d'),$now->format('Y'),$gmt);	
-	
+	$transit = new planets($now->format('m'),$now->format('d'),$now->format('Y'),$gmt);
+
 	if (isset($_POST['submit']))
 	{
-	
+
 		if (!is_numeric($mm) || !is_numeric($dd) || !is_numeric($yyyy))
 		{
 			$errors['date'] = 'Please enter Date';
@@ -89,6 +91,9 @@ require_once("class.houses.php");
 			$errors['timezone'] = 'Time Zone must be numeric';
 			$error = true;
 		}
+		$orbmajor = $_POST['majororb'];
+		$orbminor = $_POST['minororb'];
+
 		if (!$error)
 		{
 			$lat = ($_POST['latdeg'] + ($_POST['latmin']/60)) * $_POST['latns'];
@@ -99,8 +104,8 @@ require_once("class.houses.php");
 				$local_time += 12;
 			}
 			$gmt = $local_time + $timezone;
-			$p = new planets($mm,$dd,$yyyy,$gmt);	
-			$h = new Houses($mm, $dd, $yyyy, $gmt, $lat, $lng);	
+			$p = new planets($mm,$dd,$yyyy,$gmt);
+			$h = new Houses($mm, $dd, $yyyy, $gmt, $lat, $lng);
 			switch ($housesystem)
 			{
 				case 0:
@@ -140,16 +145,16 @@ span.glyph {
 
 <body>
 <p><?php echo $now->format('m/d/Y  h:i:s A');?></p>
-<p><?php echo $transit->planets[9]->longName;?> 
+<p><?php echo $transit->planets[9]->longName;?>
 <?php echo Convert::DecToZod($transit->planets[9]->long);?></p>
-<?php 
+<?php
 	if ($transit->MoonVoidOfCourse())
 	{
 		echo "<p>Moon Void of Course</p>";
 	}
 ?>
 
-<?php 
+<?php
 	if ($transit->planets[1]->rx == 'Rx')
 	{
 		echo '<p>' . $transit->planets[1]->longName . ' ' . $transit->planets[1]->rx . '</p>';
@@ -233,6 +238,12 @@ span.glyph {
 		<option value="1" <?php echo ($housesystem == 1) ? 'selected': '';?>>Koch</option>
 		<option value="2" <?php echo ($housesystem == 2) ? 'selected': '';?>>Equal</option>
 	</select>
+
+		<label for="majororb">Major Orb</label>
+		<input class="orb" type="number" name="majororb" value="<?=$orbmajor?>">
+
+		<label for="majororb">Minor Orb</label>
+		<input class="orb" type="number" name="minororb" value="<?=$orbminor?>">
 	</fieldset>
 	<input name="submit" type="submit" value="Submit">
 </form>
@@ -249,7 +260,7 @@ if ($display)
 			<th>Latitude</th>
 			<th>Declination</th>
 		</tr>
-<?php 
+<?php
 	foreach ($p->planets as $planet)
 	{
 		$odd = !$odd;
@@ -261,11 +272,11 @@ if ($display)
 			<td><?php echo Convert::DecToLat($planet->dcl);?></td>
 		</tr>
 <?php
-	}	
+	}
 ?>
 	</table>
 	<h2>Houses</h2>
-<?php 
+<?php
 	for ($i=0;$i<12;$i++)
 	{
 		echo "<p>House ";
@@ -283,8 +294,10 @@ if ($display)
 	{
 		for ($p2=$p1+1;$p2<12;$p2++)
 		{
-			$diff = abs($p->planets[$p1]->long - $p->planets[$p2]->long);
-			echo "<p>".$p->planets[$p1]->longName . " " . $diff . " " . $p->planets[$p2]->longName .  "</p>";
+			$asp = aspect($p->planets[$p1]->long, $p->planets[$p2]->long, $orbmajor, $orbminor);
+			if ($asp) {
+				echo "<p>".$p->planets[$p1]->longName . " " . $asp . " " . $p->planets[$p2]->longName .  "</p>";
+			}
 		}
 	}
 ?>
@@ -297,5 +310,34 @@ if ($display)
 function getVar($var, $default='')
 {
 	return (isset($_POST[$var])?$_POST[$var]:$default);
+}
+
+function aspect($p1, $p2, $orbMajor, $orbMinor) {
+
+	$majors = [0, 60, 90,120, 150, 180];
+	$minors = [30, 36, 45, 72, 108, 135, 144];
+	$major_names= ['Conjunction', 'Sexitile', 'Square', 'Trine', 'Quincunx', 'Opposition'];
+	$minor_names = ['Semisextile', 'Semiquintile', 'Semisquare', 'Quintile', 'Sesquiquintile ', 'Sesquiquadrate', 'Biquintile'];
+
+
+	$asp = '';
+	$diff = round(abs($p1-$p2));
+	if ($diff > 180) {
+		$diff = 360-$diff;
+	}
+
+	foreach ($majors as $idx=>$m){
+		if (($diff > $m - $orbMajor) && ($diff < $m + $orbMajor)){
+			return $major_names[$idx];
+		}
+	}
+
+	foreach ($minors as $idx=>$m){
+		if (($diff > $m - $orbMinor) && ($diff < $m + $orbMinor)){
+			return $minor_names[$idx] ;
+		}
+	}
+
+	return '';
 }
 ?>

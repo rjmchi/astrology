@@ -3,15 +3,19 @@
 .error {
 	color: #F00;
 }
-.even 
+.even
 {
 	background-color:#d5dde0;
 }
-.odd 
+.odd
 {
 	background-color:#cedce0;
 }
 
 table.planets {
 	font-size: 20px;
+}
+
+.orb {
+	width: 4rem;
 }
