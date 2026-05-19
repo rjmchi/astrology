@@ -1,163 +1,139 @@
 <?php
-/*Various conversions
-	DecToLong - converts decimal value to longitude
-	DecToLat  - converts decimal value to latitude
-	DecToTime - converts decimal value to time - 12 or 24 hour clock
-	RecToPol  - converts rectangular coordinates to polar
-	PolToRec  - converts polar coordinates to rectangular
-	DecToZod  - converts decimal to zodiac
-	DecToZodGlyph - comverts decimal to zodiac using charater for glyph
-	Mod360
-*/
+/**
+ * Various astronomical/geographic conversion utilities.
+ *
+ * Methods:
+ *   DecToLong      - decimal value → longitude string
+ *   DecToLat       - decimal value → latitude string
+ *   DecToTime      - decimal value → time (12 or 24-hour)
+ *   DecToZod       - decimal degrees → zodiac sign string
+ *   DecToZodGlyph  - decimal degrees → zodiac sign with glyph span
+ *   Mod360         - normalise value to [0, 360)
+ *   Mod2Pi         - normalise value to [0, 2π)
+ *
+ * Note: RecToPol / PolToRec have been removed from this class.
+ * They are now handled exclusively by the Coordinates class.
+ */
+
 
 define("SMALL",  1.7453e-09);
 class Convert {
 
-	static public function RecToPol($x, $y)
-	{
-		if (! $y)
-			$y = SMALL;
-		$r = sqrt($x * $x + $y * $y);
-		$a = atan($y / $x);
-		if ($a < 0)
-			$a += M_PI;
-		if ($y < 0)
-            $a += M_PI;
-        return array('a'=>$a, 'r'=>$r);
-    }
+    /**
+     * Format a decimal time value as a time string.
+     *
+     * @param float $decTime   Hours as a decimal (e.g. 13.5 = 1:30 PM).
+     * @param int   $clockType 12 or 24.
+     */
 
-	static public function PolToRec($a, $r)
-	{
-		$x = $r * cos($a);
-        $y = $r * sin($a);
-        return array('x'=>$x,'y'=>$y);
-    }
-
-    static public function DecToTime ($dec_time, $clock_type)
-    {
-        $time_hours = (int) $dec_time;
-        $dec_time -= $time_hours;
-        $dec_time = $dec_time * 60.0 +.5;
-
-        $time_min = (int) $dec_time;
-        if ($clock_type == 12)
-        {
-            if ($time_hours >= 12)
-            {
-                if ($time_hours > 12)
-                    $time_hours -= 12;
-                $am_pm = 'P';
+    public static function DecToTime (float $decTime, int $clockType) : string {
+        $hours = (int) $decTime;
+        $min   = (int) (($decTime - $hours) * 60.0 + 0.5);
+ 
+        if ($clockType === 12) {
+            $amPm = $hours >= 12 ? 'P' : 'A';
+            if ($hours > 12) {
+                $hours -= 12;
+            } elseif ($hours === 0) {
+                $hours = 12;
             }
-            else
-            {
-                if ($time_hours == 0)
-                    $time_hours += 12;
-                $am_pm = 'A';
-            }
-            $txtTime = sprintf ("%d:%02d %sM", $time_hours, $time_min, $am_pm);
+            return sprintf('%d:%02d %sM', $hours, $min, $amPm);
         }
-        else
-            $txtTime = sprintf ("%d:%02d", $time_hours, $time_min);
-
-        return $txtTime;
+        return sprintf('%d:%02d', $hours, $min);    
     }
 
-    static public function DecToLong($dec_lng)
-    {
-        if ($dec_lng < 0)
-            $dir= 'E';
-        else
-            $dir = 'W';
-        $dec_lng = abs($dec_lng);
-        $lng_deg = (int) $dec_lng;
-        $dec_lng -= $lng_deg;
-        $dec_lng = $dec_lng * 60.0 + .5;
-        $lng_min = (int) $dec_lng;
-        $txtLong = sprintf ("%d%s%02d",$lng_deg,$dir,$lng_min);
-        return $txtLong;
-    }
-    static public function DecToLat($dec_lat)
-    {
-        if ($dec_lat < 0)
-            $dir = 'S';
-        else
-            $dir = 'N';
-        $dec_lat = abs($dec_lat);
-        $lat_deg = (int) $dec_lat;
-        $dec_lat -= $lat_deg;
-        $dec_lat = $dec_lat * 60.0 + .5;
-        $lat_min = (int) $dec_lat;
-        $txtLat = sprintf ("%d%s%02d",$lat_deg,$dir,$lat_min);
-        return $txtLat;
+    /**
+     * Format a decimal longitude as e.g. "71W04".
+     * Positive = West, negative = East (traditional astrological convention).
+     */
+
+    public static function DecToLong(float $decLng) : string {
+        $dir    = $decLng < 0 ? 'E' : 'W';
+        $decLng = abs($decLng);
+        $deg    = (int) $decLng;
+        $min    = (int) (($decLng - $deg) * 60.0 + 0.5);
+        return sprintf('%d%s%02d', $deg, $dir, $min);
     }
 
-    static public function Mod360($x)
+    /**
+     * Format a decimal latitude as e.g. "42N21".
+     * Positive = North, negative = South.
+     */
+    public static function DecToLat(float $decLat): string
     {
+        $dir    = $decLat < 0 ? 'S' : 'N';
+        $decLat = abs($decLat);
+        $deg    = (int) $decLat;
+        $min    = (int) (($decLat - $deg) * 60.0 + 0.5);
+        return sprintf('%d%s%02d', $deg, $dir, $min);
+    }
+
+
+    public static function Mod360( float $x) : float  {
+    /** Normalise $x to [0, 360). */        
     /*  returns result within circle    */
-    if (!is_numeric($x)){
-        echo '--';
-        die ($x);
-        echo '--';
-    }
-        return fmod($x, 360);
+
+        if (!is_numeric($x)) {
+            echo '--';
+            die ($x);
+            echo ' not numeric --';
+        }
+        $result = fmod($x, 360.0);
+        return $result < 0 ? $result + 360.0 : $result;
     }
 
-    static public function Mod2Pi($x)
+    public static function Mod2Pi(float $x) : float {
+    /** Normalise $x to [0, 2π). */
     /*  returns result within circle in radians    */
-    {
-        return ( $x - ((int)($x /( M_PI*2))) * M_PI*2);
-    }
-    static public function DecToZod($plce)
-    {
-    $SignNames= array(' ARI ', ' TAU ', ' GEM ', ' CAN ', ' LEO ', ' VIR ', ' LIB ', ' SCO ', ' SAG ', ' CAP ', ' AQU ', ' PIC ');
-        $s = (int) ($plce / 30.0);
-        $plce -= ($s * 30);
-        $d = (int) $plce;
-        $m = (int) ((($plce - $d) * 60.0) + .5);
-
-        if ($m >=60)
-        {
-            $m -=60;
-            $d++;
-        }
-        if ($d >= 30)
-        {
-            $d-=30;
-            $s++;
-        }
-        if ($s >=12)
-        {
-            $s-=12;
-        }
-
-        $zod = sprintf("%d %s %02d", $d, $SignNames[$s], $m);
-        return $zod;
+        $twoPi = M_PI * 2;
+        $result = fmod($x, $twoPi);
+        return $result < 0 ? $result + $twoPi : $result;
     }
 
-    static public function DecToZodGlyph($plce)
-    {
-    $SignNames= array(' a ', ' b ', ' c ', ' d ', ' e ', ' f ', ' g ', ' h ', ' i ', ' j ', ' k ', ' l ');
-        $s = (int) ($plce / 30.0);
-        $plce -= ($s * 30);
-        $d = (int) $plce;
-        $m = (int) ((($plce - $d) * 60.0) + .5);
+    public static function DecToZod(float $place) :string {
+        static $signNames = [
+            ' ARI ', ' TAU ', ' GEM ', ' CAN ', ' LEO ', ' VIR ',
+            ' LIB ', ' SCO ', ' SAG ', ' CAP ', ' AQU ', ' PIC ',
+        ];
+        [$s, $d, $m] = self::zodiacParts($place);
+        return sprintf('%d%s%02d', $d, $signNames[$s], $m);
+    }
 
-        if ($m >=60)
-        {
-            $m -=60;
-            $d++;
-        }
-        if ($d >= 30)
-        {
-            $d-=30;
-            $s++;
-        }
-        if ($s >=12)
-        {
-            $s-=12;
-        }
 
-        $zod = sprintf('%d <span class="glyph">%s</span> %02d', $d, $SignNames[$s], $m);
-        return $zod;
+    /**
+     * Convert decimal degrees to a zodiac position string using font glyphs,
+     * e.g. '14 <span class="glyph"> b </span> 32'.
+     */
+
+    public static function DecToZodGlyph(float $place) : string{
+        static $signGlyphs = [
+            ' a ', ' b ', ' c ', ' d ', ' e ', ' f ',
+            ' g ', ' h ', ' i ', ' j ', ' k ', ' l ',
+            ];
+        [$s, $d, $m] = self::zodiacParts($place);
+        return sprintf('%d <span class="glyph">%s</span> %02d', $d, $signGlyphs[$s], $m);
+    }
+
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+ 
+    /**
+     * Return [signIndex, degrees, minutes] for a decimal ecliptic longitude.
+     *
+     * @return array{int, int, int}
+     */
+    private static function zodiacParts(float $place): array {
+        $s = (int) ($place / 30.0);
+        $place -= $s * 30.0;
+        $d = (int) $place;
+        $m = (int) (($place - $d) * 60.0 + 0.5);
+ 
+        if ($m >= 60) { $m -= 60; $d++; }
+        if ($d >= 30) { $d -= 30; $s++; }
+        if ($s >= 12) { $s -= 12; }
+ 
+        return [$s, $d, $m];
     }
 }

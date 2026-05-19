@@ -284,9 +284,9 @@ if ($display)
 		echo ": " . Convert::DecToZodGlyph($h->house[$i]) . "</p>";
 	}
 	echo "<p>East Point: ";
-	echo Convert::DecToZod($h->ep) . "</p>";
+	echo Convert::DecToZodGlyph($h->ep) . "</p>";
 	echo "<p>Vertex: ";
-	echo Convert::DecToZod($h->vx) . "</p>";
+	echo Convert::DecToZodGlyph($h->vx) . "</p>";
 ?>
 <h2>Aspects</h2>
 <?php
